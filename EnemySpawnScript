@@ -1,0 +1,131 @@
+//This script controls the frequency, size, type, and formation of enemy waves spawning
+using UnityEngine;
+using System.Collections;
+
+public class EnemySpawnScript : MonoBehaviour 
+{
+	public float spawnFrequency = 2.8f;
+	public float frequencyMod = 0.1f;
+	private bool invokeOn = false;
+	private int count = 0;
+	public GameObject enemySprite;
+	public GameObject meteorSprite;
+
+
+	// Use this for initialization
+	void Start () 
+	{
+	
+	}
+	
+	// Update is called once per frame
+	void Update () 
+	{
+		InitializeSpawn ();
+		IncreaseDifficulty ();
+	}
+
+	void SpawnWave ()
+	{
+		if (GameManagerScript.alive == true) 
+		{
+			int meteorSpawn = Random.Range(0,7);
+			if (meteorSpawn != 3)
+			{
+				int [] waveArray = new int[7];		//array of ints to store numbers that determine spawn positions
+				int i = 0;
+				do								//loop that will decide if a position gets a spawn or not
+				{
+					waveArray[i] = Random.Range (0,2);	
+					//print ("waveArray " + i + " got a " + waveArray[i]);
+					if (waveArray[i] == 1)					//if position 6 gets a spawn, check to make sure there are no more than 5 spawns already
+					{
+						for (int j = 0; j < i; j++)			//searches through existing array
+						{
+							//int count = 0;					//initializes count to keep track of # of spawns
+							if (waveArray [j] == 1)			
+							{
+								count++;					//if a position has a spawn, increment
+							}
+						}
+
+						if (count == 5)						
+						{
+							waveArray[i] = 0;				//if there are already 5 spawns, position 6 is forcefully changed
+							print ("wave too large, force 0");
+						}
+					}
+
+					if (waveArray[i] == 1)		//if position in wave will get a spawn
+					{
+						switch (i)    //controls where the enemy will spawn
+						{
+						case 1:
+							Instantiate (enemySprite, new Vector2(-5,5), new Quaternion (0,0,0,0));	//spawns sprite at each iteration of loop that makes a 1
+							//print  ("spawn at pos " + i);
+							break;
+						case 2: 
+							Instantiate (enemySprite, new Vector2(-3,5), new Quaternion (0,0,0,0));	//spawns sprite at each iteration of loop that makes a 1
+							//print  ("spawn at pos " + i);
+							break;
+						case 3: 
+							Instantiate (enemySprite, new Vector2(-1,5), new Quaternion (0,0,0,0));	//spawns sprite at each iteration of loop that makes a 1
+							//print  ("spawn at pos " + i);
+							break;
+						case 4:
+							Instantiate (enemySprite, new Vector2(1,5), new Quaternion (0,0,0,0));	//spawns sprite at each iteration of loop that makes a 1
+							//print  ("spawn at pos " + i);
+							break;
+						case 5: 
+							Instantiate (enemySprite, new Vector2(3,5), new Quaternion (0,0,0,0));	//spawns sprite at each iteration of loop that makes a 1
+							//print  ("spawn at pos " + i);
+							break;
+						case 6:
+							Instantiate (enemySprite, new Vector2(5,5), new Quaternion (0,0,0,0));	//spawns sprite at each iteration of loop that makes a 1
+							//print  ("spawn at pos " + i);
+							break;
+						default:
+							break;
+						}
+					}
+					i++;
+					count = 0;
+					//print ("iterate loop, reset count");
+				}
+				while (i <= 6);		//control for loop that determines if a position has a spawn
+			}
+			else
+			{
+				int meteorPos = Random.Range (-3,4);	//generates number from -3 to 3;
+				Instantiate (meteorSprite, new Vector2(meteorPos, 5), new Quaternion (0,0,0,0));
+			}
+		}
+	}
+
+	void IncreaseDifficulty()
+	{
+		if (GameManagerScript.levelScore + 1000 < GameManagerScript.score)      //when 1000 points are scored
+		{
+			GameManagerScript.levelScore = (GameManagerScript.score / 1000) * 1000;
+			if (spawnFrequency > 0.1)		                                          //limit in place for spawn frequency
+			{
+				spawnFrequency -= frequencyMod;
+			}
+			CancelInvoke();                 //allows new values to be used for invoke
+			invokeOn = false;
+			print ("Invoke cancel");
+			InitializeSpawn();			//reinitializes the invoke frequency method
+			print ("spawn frequency reinitialized/increase");
+		}
+	}
+
+	void InitializeSpawn()                            //initializes spawn frequency
+	{
+		if (GameManagerScript.alive && !invokeOn)
+		{
+			InvokeRepeating ("SpawnWave", 1.5f, spawnFrequency);
+			invokeOn = true;
+		}
+	}
+
+}
