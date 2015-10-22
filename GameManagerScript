@@ -1,0 +1,40 @@
+//Manages game states including holding score, lives, and replaying the game
+
+using UnityEngine;
+using System.Collections;
+using UnityEngine.UI;
+
+public class GameManagerScript : MonoBehaviour 
+{
+	public static int score = 0;
+	public Text display;
+	public static bool alive = true;		//control variable for player state
+	public static int levelScore = 0;					//variable to keep track of score for increasing difficulty
+
+	// Use this for initialization
+	void Start () 
+	{
+	}
+	
+	// Update is called once per frame
+	void Update () 
+	{							 
+		display.text	 = "Score: " + score;
+
+		if (alive == false) 
+		{
+			display.text = "Game Over\nScore: " + score + "\n\nPress Y to restart or N to Quit";
+			if (Input.GetKeyDown ("y"))
+			{
+				Application.LoadLevel (0); 
+				alive = true;
+				score = 0;
+				levelScore = 0;
+			}
+			if (Input.GetKeyDown ("n"))
+			{
+				Application.Quit();
+			}
+		}
+	}
+}
