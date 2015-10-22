@@ -1,0 +1,60 @@
+//This script controls movement and physics of enemies as well as points scored
+
+using UnityEngine;
+using System.Collections;
+
+public class EnemyScript : MonoBehaviour 
+{
+	public float appliedForce = 2.0f;
+	private int direction;
+	public int pointsScored;
+
+	// Use this for initialization
+	void Start () 
+	{
+		GetComponent<Rigidbody2D> ();
+		direction = Random.Range (1, 4);
+	}
+	
+	// Update is called once per frame
+	void Update () 
+	{
+		Rigidbody2D rb = GetComponent<Rigidbody2D> ();
+		switch (direction) 						//determines how the enemy will come towards the player
+		{
+		case 1:
+			rb.AddForce (new Vector3 (appliedForce, 0));
+			break;
+		case 2:
+			rb.AddForce (new Vector3 (-appliedForce, 0));
+			break;
+		default:
+			break;
+		}
+	}
+
+	void OnCollisionEnter2D (Collision2D collisionInfo)
+	{
+		if (collisionInfo.gameObject.name == "groundPoint") 		//destroys enemy gameObject
+		{
+			Destroy (gameObject);
+			if (GameManagerScript.alive == true)
+			{
+				GameManagerScript.score += pointsScored;			//award points if player is still alive
+			}	
+		}
+
+		if (collisionInfo.gameObject.name == "playerSprite") 
+		{
+			print ("Player hit ship. End game");
+			Destroy (collisionInfo.gameObject);
+			GameManagerScript.alive = false;
+		}
+
+		if (collisionInfo.gameObject.name == "enemyMeteor") //enemies that crash into meteor are destroyed
+		{
+			Destroy (gameObject);
+		}
+
+	}
+}
