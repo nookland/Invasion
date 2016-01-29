@@ -1,0 +1,27 @@
+//This script is responsible for controlling player movement and collider effects.
+
+using UnityEngine;
+using System.Collections;
+
+public class MovementScript : MonoBehaviour 
+{
+	public float speed = 2;
+	const float X_MAX = 6.4f;
+
+	// Use this for initialization
+	void Start () 
+	{
+		GetComponent<Transform> ();
+	}
+	
+	// Update is called once per frame
+	void FixedUpdate () 
+	{
+		float move = Input.GetAxisRaw ("Horizontal");
+		//print ("Move = " + move);
+		Rigidbody2D rb = GetComponent<Rigidbody2D> ();
+		rb.velocity = Vector2.right * move * speed;
+		float xPos = transform.position.x + move * speed;
+		xPos = Mathf.Clamp (xPos, -X_MAX, X_MAX);		//restrains x axis movement
+	}
+}
